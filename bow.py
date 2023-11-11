@@ -5,6 +5,9 @@ from tensor import train_dataset, test_dataset, encode, vocab
 vocab_size = len(vocab)
 
 # %%
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+# %%
 # 文章をBoWに変換
 # 文章中に出現する単語毎の出現回数をカウント
 def to_bow(text, bow_vocab_size=len(vocab)):
@@ -55,14 +58,18 @@ network = torch.nn.Sequential(torch.nn.Linear(vocab_size, 4), torch.nn.LogSoftma
 
 # %%
 def train_epoch(network, dataloader, learning_rate=0.01, optimizer=None, loss_fn=torch.nn.NLLLoss(), epoch_size=None, report_freq=200):
+    print("traing...")
+
     optimizer = optimizer or torch.optim.Adam(network.parameters(), lr=learning_rate)
     # ネットワークにトレーニングすると伝える
     network.train()
 
     total_loss, accuracy, count, i = 0, 0, 0, 0
     for labels, features in dataloader:
+        print("batch start")
         # labels: bowify返り値の0番目の要素
         # features: bowify返り値の1番目の要素
+        features, labels = features.to(device), labels.to(device)
 
         optimizer.zero_grad()
         out = network(features)
@@ -87,20 +94,22 @@ def train_epoch(network, dataloader, learning_rate=0.01, optimizer=None, loss_fn
     return total_loss.item()/count, accuracy.item()/count
 
 # %%
-train_epoch(network, train_loader, epoch_size=2)
+# train_epoch(network, train_loader, epoch_size=2)
 
 # %%
 N = 10
-df = torch.zeros(vocab_size)
-for _, line in train_dataset[:N]:
-    for i in set(encode(line)):
-        df[i] += 1
+def count_df():
+    df = torch.zeros(vocab_size)
+    for _, line in train_dataset[:N]:
+        for i in set(encode(line)):
+            df[i] += 1
+    return df
 
 def crate_tf_idf(s):
     bow = to_bow(s)
-    return bow * torch.log((N+1)/(df+1))
+    return bow * torch.log((N+1)/(count_df()+1))
 
-# crate_tf_idf(first_sentence)
+# crate_tf_idf(train_dataset[0][1])
 # tensor([2.5986, 1.2993, 0.0000,  ..., 0.0000, 0.0000, 0.0000])
 
 
