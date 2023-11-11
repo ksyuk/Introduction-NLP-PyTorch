@@ -5,7 +5,8 @@ from tensor import train_dataset, test_dataset, encode, vocab
 vocab_size = len(vocab)
 
 # %%
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("mps" if torch.backends.mps.is_available() else "cpu")
+device = torch.device("cuda" if torch.cuda.is_available() else device)
 
 # %%
 # 文章をBoWに変換
