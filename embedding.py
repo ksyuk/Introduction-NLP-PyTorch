@@ -1,9 +1,7 @@
 # %%
 import torch
-import torchtext
 
 from tensor import train_dataset, encode, vocab, classes
-from bow import train_epoch
 
 vocab_size = len(vocab)
 
@@ -50,7 +48,7 @@ class EmbedClassifier(torch.nn.Module):
 network = EmbedClassifier(vocab_size, 32 ,len(classes)).to(device)
 
 # %%
-train_epoch(network, train_loader, learning_rate=1, epoch_size=25)
+# train_epoch(network, train_loader, learning_rate=1, epoch_size=25)
 
 # %%
 class EmbedClassifier(torch.nn.Module):
@@ -88,6 +86,8 @@ train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=16, collate
 network = EmbedClassifier(vocab_size, 32, len(classes)).to(device)
 
 def train_epoch_emb(network, dataloader, lr=0.01, optimizer=None, loss_fn=torch.nn.CrossEntropyLoss(), epoch_size=None, report_freq=200):
+    print("traing...")
+
     optimizer = optimizer or torch.optim.Adam(network.parameters(), lr=lr)
     loss_fn = loss_fn.to(device)
     network.train()
@@ -116,6 +116,4 @@ def train_epoch_emb(network, dataloader, lr=0.01, optimizer=None, loss_fn=torch.
     return total_loss.item()/count, accurancy.item()/count
 
 # %%
-train_epoch_emb(network, train_loader, lr=4, epoch_size=25)
-
-
+# train_epoch_emb(network, train_loader, lr=4, epoch_size=25)
