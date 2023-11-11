@@ -11,6 +11,10 @@ train_dataset, test_dataset = torchtext.datasets.AG_NEWS(root='./data')
 classes = ['World', 'Sports', 'Business', 'Sci/Tech']
 
 # %%
+train_dataset = list(train_dataset)
+test_dataset = list(test_dataset)
+
+# %%
 # tokenizer: 文章を単語に分割する
 tokenizer = torchtext.data.utils.get_tokenizer('basic_english')
 
@@ -40,7 +44,7 @@ def encode(x):
     return [vocab.get_stoi()[s] for s in tokenizer(x)]
 
 # 文章中の単語を単語IDに変換
-vec = encode(first_sentence)
+# vec = encode(first_sentence)
 # wall -> 0
 # st -> 1
 # . -> 2
@@ -53,7 +57,7 @@ def decode(x):
     return [vocab.get_itos()[i] for i in x]
 
 # 単語IDを単語に変換
-decoded_vec = decode(vec)
+# decoded_vec = decode(vec)
 # 0 -> wall
 # 1 -> st
 # 2 -> .
@@ -67,19 +71,21 @@ from torchtext.data.utils import ngrams_iterator
 # 'hot dog'という単語列の意味と'hot'と'dog'の単語の意味は意味が全く異なる。
 # そこで、bivocab(N-grameでn=2)が全ての単語のペアを格納する
 
-bi_counter = collections.Counter()
-for label, line in train_dataset:
-    bi_counter.update(ngrams_iterator(tokenizer(line), ngrams=2))
-bi_vocab = torchtext.vocab.vocab(bi_counter, min_freq=2)
+def create_bi_vocab(dataset):
+    bi_counter = collections.Counter()
+    for _, line in dataset:
+        bi_counter.update(ngrams_iterator(tokenizer(line), ngrams=2))
+    bi_vocab = torchtext.vocab.vocab(bi_counter, min_freq=2)
+    return bi_vocab
 
 # %%
 # 単語IDに変換
-def encode(x):
+def encode_ngram(texts, vocab):
     bi_vocabs = []
-    for s in tokenizer(x):
+    for s in tokenizer(texts):
         if counter[s] == 1:
             continue
-        bi_vocabs.append(bi_vocab.get_stoi()[s])
+        bi_vocabs.append(vocab.get_stoi()[s])
     return bi_vocabs
 
 
