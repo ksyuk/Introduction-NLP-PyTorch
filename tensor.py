@@ -19,9 +19,8 @@ test_dataset = list(test_dataset)
 tokenizer = torchtext.data.utils.get_tokenizer('basic_english')
 
 # %%
-first_sentence = train_dataset[0][1]
-
-f_tokens = tokenizer(first_sentence)
+# first_sentence = train_dataset[0][1]
+# f_tokens = tokenizer(first_sentence)
 # 29 ['wall', 'st', '.', 'bears', 'claw', 'back', 'into', 'the', 'black', '(', 'reuters', ')', 'reuters', '-', 'short-sellers', ',', 'wall', 'street', "'", 's', 'dwindling\\band', 'of', 'ultra-cynics', ',', 'are', 'seeing', 'green', 'again', '.']
 
 # %%
@@ -36,7 +35,7 @@ vocab = torchtext.vocab.vocab(counter, min_freq=1)
 vocab_size = len(vocab)
 
 # %%
-word_lookup = [list((vocab[w], w)) for w in f_tokens]
+# word_lookup = [list((vocab[w], w)) for w in f_tokens]
 # [[0, 'wall'], [1, 'st'], [2, '.'], [3, 'bears'], [4, 'claw'], [5, 'back'], [6, 'into'], [7, 'the'], [8, 'black'], [9, '('], [10, 'reuters'], [11, ')'], [10, 'reuters'], [12, '-'], [13, 'short-sellers'], [14, ','], [0, 'wall'], [15, 'street'], [16, "'"], [17, 's'], [18, 'dwindling\\band'], [19, 'of'], [20, 'ultra-cynics'], [14, ','], [21, 'are'], [22, 'seeing'], [23, 'green'], [24, 'again'], [2, '.']]
 
 # %%
